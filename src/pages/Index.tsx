@@ -97,11 +97,13 @@ const Index = () => {
           </Button>
         </div>
         <div className="flex justify-start">
-          <img 
-            src={asbLogo} 
-            alt="ASB Logo" 
-            className="h-48 w-auto max-w-[50vw] object-contain"
-          />
+          <div className="bg-white dark:bg-white p-4 rounded-lg">
+            <img 
+              src={asbLogo} 
+              alt="ASB Logo" 
+              className="h-48 w-auto max-w-[50vw] object-contain"
+            />
+          </div>
         </div>
       </header>
 
