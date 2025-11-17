@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import asbLogo from "@/assets/asb-logo.png";
 
 const Index = () => {
@@ -76,7 +77,7 @@ const Index = () => {
     <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header with Logo, Time and Admin Button */}
       <header className="relative p-4">
-        <div className="absolute top-4 right-4 flex items-center gap-6">
+        <div className="absolute top-4 right-4 flex items-center gap-3">
           <div className="text-right">
             <div className="text-3xl font-bold text-foreground tabular-nums">
               {formatTime(currentTime)}
@@ -85,6 +86,7 @@ const Index = () => {
               {formatDate(currentTime)}
             </div>
           </div>
+          <ThemeToggle />
           <Button
             variant="ghost"
             size="sm"
