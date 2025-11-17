@@ -114,96 +114,34 @@ const Index = () => {
         </h1>
 
         {/* Timer Display */}
-        <div className="bg-black/90 border-4 border-red-600/50 text-white rounded-2xl sm:rounded-3xl px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6 md:py-8 lg:py-12 shadow-[0_0_30px_rgba(220,38,38,0.5),inset_0_0_20px_rgba(220,38,38,0.1)] mb-4 sm:mb-6 relative overflow-hidden">
-          {/* LED glow effect background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-red-950/30 via-transparent to-red-950/30 pointer-events-none"></div>
-          
-          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 relative">
+        <div className="bg-gradient-to-br from-red-600 to-red-700 text-white rounded-2xl sm:rounded-3xl px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6 md:py-8 lg:py-12 shadow-2xl mb-4 sm:mb-6 border-2 border-red-500/50">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
             <div className="text-center">
-              <div 
-                className="text-[clamp(2rem,6vw,12rem)] font-bold leading-none tracking-wider"
-                style={{ 
-                  fontFamily: 'Orbitron, monospace',
-                  textShadow: '0 0 10px rgba(239, 68, 68, 0.8), 0 0 20px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3)',
-                  color: '#ef4444',
-                  letterSpacing: '0.05em'
-                }}
-              >
+              <div className="text-[clamp(2rem,6vw,12rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.days.toString().padStart(3, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1.2vw,2rem)] mt-2 opacity-80 font-semibold tracking-wide">Tage</div>
+              <div className="text-[clamp(0.75rem,1.2vw,2rem)] mt-2 opacity-90">Tage</div>
             </div>
-            
-            <div 
-              className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-60"
-              style={{ 
-                fontFamily: 'Orbitron, monospace',
-                textShadow: '0 0 8px rgba(239, 68, 68, 0.6)',
-                color: '#ef4444'
-              }}
-            >:</div>
-            
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-50">:</div>
             <div className="text-center">
-              <div 
-                className="text-[clamp(1.5rem,4vw,8rem)] font-bold leading-none tracking-wider"
-                style={{ 
-                  fontFamily: 'Orbitron, monospace',
-                  textShadow: '0 0 10px rgba(239, 68, 68, 0.8), 0 0 20px rgba(239, 68, 68, 0.5)',
-                  color: '#ef4444',
-                  letterSpacing: '0.05em'
-                }}
-              >
+              <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.hours.toString().padStart(2, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-80 font-semibold tracking-wide">Std</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-90">Std</div>
             </div>
-            
-            <div 
-              className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-60"
-              style={{ 
-                fontFamily: 'Orbitron, monospace',
-                textShadow: '0 0 8px rgba(239, 68, 68, 0.6)',
-                color: '#ef4444'
-              }}
-            >:</div>
-            
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-50">:</div>
             <div className="text-center">
-              <div 
-                className="text-[clamp(1.5rem,4vw,8rem)] font-bold leading-none tracking-wider"
-                style={{ 
-                  fontFamily: 'Orbitron, monospace',
-                  textShadow: '0 0 10px rgba(239, 68, 68, 0.8), 0 0 20px rgba(239, 68, 68, 0.5)',
-                  color: '#ef4444',
-                  letterSpacing: '0.05em'
-                }}
-              >
+              <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.minutes.toString().padStart(2, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-80 font-semibold tracking-wide">Min</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-90">Min</div>
             </div>
-            
-            <div 
-              className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-60"
-              style={{ 
-                fontFamily: 'Orbitron, monospace',
-                textShadow: '0 0 8px rgba(239, 68, 68, 0.6)',
-                color: '#ef4444'
-              }}
-            >:</div>
-            
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-50">:</div>
             <div className="text-center">
-              <div 
-                className="text-[clamp(1.5rem,4vw,8rem)] font-bold leading-none tracking-wider"
-                style={{ 
-                  fontFamily: 'Orbitron, monospace',
-                  textShadow: '0 0 10px rgba(239, 68, 68, 0.8), 0 0 20px rgba(239, 68, 68, 0.5)',
-                  color: '#ef4444',
-                  letterSpacing: '0.05em'
-                }}
-              >
+              <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.seconds.toString().padStart(2, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-80 font-semibold tracking-wide">Sek</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-90">Sek</div>
             </div>
           </div>
         </div>
