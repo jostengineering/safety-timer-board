@@ -46,7 +46,6 @@ const Index = () => {
     return date.toLocaleTimeString("de-DE", {
       hour: "2-digit",
       minute: "2-digit",
-      second: "2-digit",
     });
   };
 
@@ -61,9 +60,17 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header with Logo and Admin Button */}
+      {/* Header with Logo, Time and Admin Button */}
       <header className="relative p-8">
-        <div className="absolute top-8 right-8">
+        <div className="absolute top-8 right-8 flex items-center gap-6">
+          <div className="text-right">
+            <div className="text-3xl font-bold text-foreground tabular-nums">
+              {formatTime(currentTime)}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {formatDate(currentTime)}
+            </div>
+          </div>
           <Button
             variant="ghost"
             size="sm"
@@ -126,15 +133,10 @@ const Index = () => {
         </p>
       </main>
 
-      {/* Footer with Current Time */}
-      <footer className="p-8 border-t border-border">
-        <div className="text-center">
-          <div className="text-4xl font-bold text-foreground tabular-nums mb-2">
-            {formatTime(currentTime)}
-          </div>
-          <div className="text-lg text-muted-foreground">
-            {formatDate(currentTime)}
-          </div>
+      {/* Footer */}
+      <footer className="p-8">
+        <div className="text-center text-sm text-muted-foreground">
+          Sicherheit geht vor
         </div>
       </footer>
     </div>

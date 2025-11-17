@@ -48,9 +48,9 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         safety: {
-          green: "hsl(var(--safety-green))",
-          "green-light": "hsl(var(--safety-green-light))",
-          "green-dark": "hsl(var(--safety-green-dark))",
+          blue: "hsl(var(--safety-blue))",
+          "blue-light": "hsl(var(--safety-blue-light))",
+          "blue-dark": "hsl(var(--safety-blue-dark))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
