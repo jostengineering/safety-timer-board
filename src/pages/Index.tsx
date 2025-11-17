@@ -109,62 +109,62 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-3 sm:px-8 py-0">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 sm:mb-8">
+        <h1 className="text-[clamp(1.5rem,3vw,4rem)] font-bold text-foreground mb-4 sm:mb-8">
           Unfallfrei seit:
         </h1>
 
         {/* Timer Display */}
-        <div className="bg-gradient-to-br from-red-600 to-red-700 text-white rounded-2xl sm:rounded-3xl px-4 sm:px-8 md:px-12 py-4 sm:py-6 md:py-8 shadow-2xl mb-4 sm:mb-6 border-2 border-red-500/50">
-          <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+        <div className="bg-gradient-to-br from-red-600 to-red-700 text-white rounded-2xl sm:rounded-3xl px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6 md:py-8 lg:py-12 shadow-2xl mb-4 sm:mb-6 border-2 border-red-500/50">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
             <div className="text-center">
-              <div className="text-3xl sm:text-5xl md:text-7xl font-bold tabular-nums">
+              <div className="text-[clamp(2rem,6vw,12rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.days.toString().padStart(3, "0")}
               </div>
-              <div className="text-xs sm:text-base md:text-xl mt-1 opacity-90">Tage</div>
+              <div className="text-[clamp(0.75rem,1.2vw,2rem)] mt-2 opacity-90">Tage</div>
             </div>
-            <div className="text-2xl sm:text-4xl md:text-5xl font-light opacity-50">:</div>
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-50">:</div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl md:text-5xl font-bold tabular-nums">
+              <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.hours.toString().padStart(2, "0")}
               </div>
-              <div className="text-xs sm:text-sm md:text-lg mt-1 opacity-90">Std</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-90">Std</div>
             </div>
-            <div className="text-2xl sm:text-4xl md:text-5xl font-light opacity-50">:</div>
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-50">:</div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl md:text-5xl font-bold tabular-nums">
+              <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.minutes.toString().padStart(2, "0")}
               </div>
-              <div className="text-xs sm:text-sm md:text-lg mt-1 opacity-90">Min</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-90">Min</div>
             </div>
-            <div className="text-2xl sm:text-4xl md:text-5xl font-light opacity-50">:</div>
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-50">:</div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl md:text-5xl font-bold tabular-nums">
+              <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.seconds.toString().padStart(2, "0")}
               </div>
-              <div className="text-xs sm:text-sm md:text-lg mt-1 opacity-90">Sek</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-90">Sek</div>
             </div>
           </div>
         </div>
 
         {/* Record Display */}
-        <div className="mt-4 sm:mt-8 bg-gradient-to-r from-red-500/10 via-yellow-500/20 to-red-500/10 border border-red-500/30 rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 backdrop-blur-sm">
-          <div className="flex items-center justify-between gap-3 sm:gap-6">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="text-2xl sm:text-3xl md:text-4xl">🏆</div>
+        <div className="mt-4 sm:mt-8 bg-gradient-to-r from-red-500/10 via-yellow-500/20 to-red-500/10 border border-red-500/30 rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4 md:py-6 lg:py-8 backdrop-blur-sm">
+          <div className="flex items-center justify-between gap-3 sm:gap-6 lg:gap-10">
+            <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
+              <div className="text-[clamp(1.5rem,2.5vw,4rem)]">🏆</div>
               <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">
+                <p className="text-[clamp(0.75rem,1vw,1.25rem)] uppercase tracking-wide text-muted-foreground font-semibold mb-1">
                   Rekord
                 </p>
-                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
+                <p className="text-[clamp(0.75rem,0.9vw,1.1rem)] text-muted-foreground hidden sm:block">
                   Längste unfallfreie Zeit
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-red-600 dark:text-red-500 tabular-nums">
+              <p className="text-[clamp(2rem,4vw,8rem)] font-bold text-red-600 dark:text-red-500 tabular-nums leading-none">
                 {recordDays}
               </p>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+              <p className="text-[clamp(0.75rem,1vw,1.5rem)] text-muted-foreground mt-2">
                 {recordDays === 1 ? 'Tag' : 'Tage'}
               </p>
             </div>
