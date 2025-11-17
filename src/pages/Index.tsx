@@ -147,7 +147,7 @@ const Index = () => {
         </div>
 
         {/* Record Display */}
-        <div className="mt-8 bg-gradient-to-r from-accent/10 via-accent/20 to-accent/10 border border-accent/30 rounded-2xl px-8 py-6 backdrop-blur-sm">
+        <div className="mt-8 bg-gradient-to-r from-red-500/10 via-yellow-500/20 to-red-500/10 border border-red-500/30 rounded-2xl px-8 py-6 backdrop-blur-sm">
           <div className="flex items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="text-4xl">🏆</div>
@@ -161,7 +161,7 @@ const Index = () => {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-5xl font-bold text-accent tabular-nums">
+              <p className="text-5xl font-bold text-red-600 dark:text-red-500 tabular-nums">
                 {recordDays}
               </p>
               <p className="text-sm text-muted-foreground mt-1">
