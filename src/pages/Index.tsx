@@ -6,6 +6,7 @@ import asbLogo from "@/assets/asb-logo.png";
 const Index = () => {
   const navigate = useNavigate();
   const [elapsedTime, setElapsedTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [recordDays, setRecordDays] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -15,6 +16,12 @@ const Index = () => {
 
     if (!lastAccident) {
       localStorage.setItem("lastAccidentDate", startDate.toISOString());
+    }
+
+    // Get record from localStorage
+    const savedRecord = localStorage.getItem("recordDays");
+    if (savedRecord) {
+      setRecordDays(parseInt(savedRecord));
     }
 
     // Update elapsed time every second
@@ -28,6 +35,13 @@ const Index = () => {
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
       setElapsedTime({ days, hours, minutes, seconds });
+
+      // Update record if current days exceeds it
+      const currentRecord = parseInt(localStorage.getItem("recordDays") || "0");
+      if (days > currentRecord) {
+        localStorage.setItem("recordDays", days.toString());
+        setRecordDays(days);
+      }
     }, 1000);
 
     return () => clearInterval(timer);
@@ -128,9 +142,19 @@ const Index = () => {
           </div>
         </div>
 
-        <p className="text-2xl text-muted-foreground">
+        <p className="text-2xl text-muted-foreground mb-8">
           Sicherheit ist unsere Priorität
         </p>
+
+        {/* Record Display */}
+        <div className="bg-accent/20 border-2 border-accent rounded-xl px-8 py-4">
+          <p className="text-sm text-muted-foreground mb-1">
+            🏆 Längste unfallfreie Zeit
+          </p>
+          <p className="text-3xl font-bold text-accent">
+            {recordDays} {recordDays === 1 ? 'Tag' : 'Tage'}
+          </p>
+        </div>
       </main>
 
       {/* Footer */}
