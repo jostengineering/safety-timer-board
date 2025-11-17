@@ -147,13 +147,28 @@ const Index = () => {
         </div>
 
         {/* Record Display */}
-        <div className="bg-accent/20 border-2 border-accent rounded-xl px-6 py-3 mt-6">
-          <p className="text-xs text-muted-foreground mb-1">
-            🏆 Längste unfallfreie Zeit
-          </p>
-          <p className="text-2xl font-bold text-accent">
-            {recordDays} {recordDays === 1 ? 'Tag' : 'Tage'}
-          </p>
+        <div className="mt-8 bg-gradient-to-r from-accent/10 via-accent/20 to-accent/10 border border-accent/30 rounded-2xl px-8 py-6 backdrop-blur-sm">
+          <div className="flex items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <div className="text-4xl">🏆</div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">
+                  Rekord
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Längste unfallfreie Zeit
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-5xl font-bold text-accent tabular-nums">
+                {recordDays}
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {recordDays === 1 ? 'Tag' : 'Tage'}
+              </p>
+            </div>
+          </div>
         </div>
       </main>
     </div>
