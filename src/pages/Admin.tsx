@@ -14,7 +14,7 @@ const Admin = () => {
   const [lastAccidentDate, setLastAccidentDate] = useState<Date | null>(null);
 
   // Simple password - in production, this should be more secure
-  const ADMIN_PASSWORD = "admin123";
+  const ADMIN_PASSWORD = "AsbBrandenburg";
 
   useEffect(() => {
     // Check if already logged in (session)
