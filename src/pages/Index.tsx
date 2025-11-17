@@ -110,11 +110,11 @@ const Index = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-8 py-0">
         <h1 className="text-4xl font-bold text-foreground mb-8">
-          Tage ohne Arbeitsunfall
+          Unfallfrei seit:
         </h1>
 
         {/* Timer Display */}
-        <div className="bg-primary text-primary-foreground rounded-3xl px-12 py-8 shadow-2xl mb-6">
+        <div className="bg-gradient-to-br from-red-600 to-red-700 text-white rounded-3xl px-12 py-8 shadow-2xl mb-6 border-2 border-red-500/50">
           <div className="flex items-center gap-3">
             <div className="text-center">
               <div className="text-7xl font-bold tabular-nums">
