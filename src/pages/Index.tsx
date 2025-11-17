@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import asbLogo from "@/assets/asb-logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -63,9 +64,11 @@ const Index = () => {
       {/* Header with Logo */}
       <header className="p-8 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center text-muted-foreground text-sm">
-            Logo
-          </div>
+          <img 
+            src={asbLogo} 
+            alt="ASB Logo" 
+            className="h-32 w-auto object-contain"
+          />
         </div>
         <Button
           variant="ghost"
