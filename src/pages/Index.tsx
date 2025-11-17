@@ -76,13 +76,13 @@ const Index = () => {
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header with Logo, Time and Admin Button */}
-      <header className="relative p-4">
-        <div className="absolute top-4 right-4 flex items-center gap-3">
-          <div className="text-right">
-            <div className="text-3xl font-bold text-foreground tabular-nums">
+      <header className="relative p-2 sm:p-4">
+        <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex items-center gap-1 sm:gap-3">
+          <div className="text-right hidden sm:block">
+            <div className="text-xl sm:text-3xl font-bold text-foreground tabular-nums">
               {formatTime(currentTime)}
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground">
               {formatDate(currentTime)}
             </div>
           </div>
@@ -91,80 +91,80 @@ const Index = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/admin")}
-            className="text-muted-foreground"
+            className="text-muted-foreground text-xs sm:text-sm"
           >
             Admin
           </Button>
         </div>
         <div className="flex justify-start">
-          <div className="bg-white dark:bg-white p-4 rounded-lg">
+          <div className="bg-white dark:bg-white p-2 sm:p-4 rounded-lg">
             <img 
               src={asbLogo} 
               alt="ASB Logo" 
-              className="h-48 w-auto max-w-[50vw] object-contain"
+              className="h-16 sm:h-32 md:h-48 w-auto max-w-[50vw] object-contain"
             />
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-8 py-0">
-        <h1 className="text-4xl font-bold text-foreground mb-8">
+      <main className="flex-1 flex flex-col items-center justify-center px-3 sm:px-8 py-0">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4 sm:mb-8">
           Unfallfrei seit:
         </h1>
 
         {/* Timer Display */}
-        <div className="bg-gradient-to-br from-red-600 to-red-700 text-white rounded-3xl px-12 py-8 shadow-2xl mb-6 border-2 border-red-500/50">
-          <div className="flex items-center gap-3">
+        <div className="bg-gradient-to-br from-red-600 to-red-700 text-white rounded-2xl sm:rounded-3xl px-4 sm:px-8 md:px-12 py-4 sm:py-6 md:py-8 shadow-2xl mb-4 sm:mb-6 border-2 border-red-500/50">
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
             <div className="text-center">
-              <div className="text-7xl font-bold tabular-nums">
+              <div className="text-3xl sm:text-5xl md:text-7xl font-bold tabular-nums">
                 {elapsedTime.days.toString().padStart(3, "0")}
               </div>
-              <div className="text-xl mt-1 opacity-90">Tage</div>
+              <div className="text-xs sm:text-base md:text-xl mt-1 opacity-90">Tage</div>
             </div>
-            <div className="text-5xl font-light opacity-50">:</div>
+            <div className="text-2xl sm:text-4xl md:text-5xl font-light opacity-50">:</div>
             <div className="text-center">
-              <div className="text-5xl font-bold tabular-nums">
+              <div className="text-2xl sm:text-3xl md:text-5xl font-bold tabular-nums">
                 {elapsedTime.hours.toString().padStart(2, "0")}
               </div>
-              <div className="text-lg mt-1 opacity-90">Std</div>
+              <div className="text-xs sm:text-sm md:text-lg mt-1 opacity-90">Std</div>
             </div>
-            <div className="text-5xl font-light opacity-50">:</div>
+            <div className="text-2xl sm:text-4xl md:text-5xl font-light opacity-50">:</div>
             <div className="text-center">
-              <div className="text-5xl font-bold tabular-nums">
+              <div className="text-2xl sm:text-3xl md:text-5xl font-bold tabular-nums">
                 {elapsedTime.minutes.toString().padStart(2, "0")}
               </div>
-              <div className="text-lg mt-1 opacity-90">Min</div>
+              <div className="text-xs sm:text-sm md:text-lg mt-1 opacity-90">Min</div>
             </div>
-            <div className="text-5xl font-light opacity-50">:</div>
+            <div className="text-2xl sm:text-4xl md:text-5xl font-light opacity-50">:</div>
             <div className="text-center">
-              <div className="text-5xl font-bold tabular-nums">
+              <div className="text-2xl sm:text-3xl md:text-5xl font-bold tabular-nums">
                 {elapsedTime.seconds.toString().padStart(2, "0")}
               </div>
-              <div className="text-lg mt-1 opacity-90">Sek</div>
+              <div className="text-xs sm:text-sm md:text-lg mt-1 opacity-90">Sek</div>
             </div>
           </div>
         </div>
 
         {/* Record Display */}
-        <div className="mt-8 bg-gradient-to-r from-red-500/10 via-yellow-500/20 to-red-500/10 border border-red-500/30 rounded-2xl px-8 py-6 backdrop-blur-sm">
-          <div className="flex items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="text-4xl">🏆</div>
+        <div className="mt-4 sm:mt-8 bg-gradient-to-r from-red-500/10 via-yellow-500/20 to-red-500/10 border border-red-500/30 rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 backdrop-blur-sm">
+          <div className="flex items-center justify-between gap-3 sm:gap-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="text-2xl sm:text-3xl md:text-4xl">🏆</div>
               <div>
                 <p className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-1">
                   Rekord
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
                   Längste unfallfreie Zeit
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-5xl font-bold text-red-600 dark:text-red-500 tabular-nums">
+              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-red-600 dark:text-red-500 tabular-nums">
                 {recordDays}
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 {recordDays === 1 ? 'Tag' : 'Tage'}
               </p>
             </div>
