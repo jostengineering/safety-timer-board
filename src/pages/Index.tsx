@@ -61,23 +61,25 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header with Logo */}
-      <header className="p-8 flex justify-between items-center">
-        <div className="flex items-center gap-4">
+      {/* Header with Logo and Admin Button */}
+      <header className="relative p-8">
+        <div className="absolute top-8 right-8">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/admin")}
+            className="text-muted-foreground"
+          >
+            Admin
+          </Button>
+        </div>
+        <div className="flex justify-center">
           <img 
             src={asbLogo} 
             alt="ASB Logo" 
-            className="h-32 w-auto object-contain"
+            className="h-40 w-auto object-contain"
           />
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate("/admin")}
-          className="text-muted-foreground"
-        >
-          Admin
-        </Button>
       </header>
 
       {/* Main Content */}
