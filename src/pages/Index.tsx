@@ -73,10 +73,10 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header with Logo, Time and Admin Button */}
-      <header className="relative p-8">
-        <div className="absolute top-8 right-8 flex items-center gap-6">
+      <header className="relative p-4">
+        <div className="absolute top-4 right-4 flex items-center gap-6">
           <div className="text-right">
             <div className="text-3xl font-bold text-foreground tabular-nums">
               {formatTime(currentTime)}
@@ -98,71 +98,60 @@ const Index = () => {
           <img 
             src={asbLogo} 
             alt="ASB Logo" 
-            className="h-40 w-auto object-contain"
+            className="h-32 w-auto object-contain"
           />
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-8 pb-16">
-        <h1 className="text-5xl font-bold text-foreground mb-16">
+      <main className="flex-1 flex flex-col items-center justify-center px-8 py-0">
+        <h1 className="text-4xl font-bold text-foreground mb-8">
           Tage ohne Arbeitsunfall
         </h1>
 
         {/* Timer Display */}
-        <div className="bg-primary text-primary-foreground rounded-3xl px-16 py-12 shadow-2xl mb-8">
-          <div className="flex items-center gap-4">
+        <div className="bg-primary text-primary-foreground rounded-3xl px-12 py-8 shadow-2xl mb-6">
+          <div className="flex items-center gap-3">
             <div className="text-center">
-              <div className="text-8xl font-bold tabular-nums">
+              <div className="text-7xl font-bold tabular-nums">
                 {elapsedTime.days.toString().padStart(3, "0")}
               </div>
-              <div className="text-2xl mt-2 opacity-90">Tage</div>
+              <div className="text-xl mt-1 opacity-90">Tage</div>
             </div>
-            <div className="text-6xl font-light opacity-50">:</div>
+            <div className="text-5xl font-light opacity-50">:</div>
             <div className="text-center">
-              <div className="text-6xl font-bold tabular-nums">
+              <div className="text-5xl font-bold tabular-nums">
                 {elapsedTime.hours.toString().padStart(2, "0")}
               </div>
-              <div className="text-xl mt-2 opacity-90">Std</div>
+              <div className="text-lg mt-1 opacity-90">Std</div>
             </div>
-            <div className="text-6xl font-light opacity-50">:</div>
+            <div className="text-5xl font-light opacity-50">:</div>
             <div className="text-center">
-              <div className="text-6xl font-bold tabular-nums">
+              <div className="text-5xl font-bold tabular-nums">
                 {elapsedTime.minutes.toString().padStart(2, "0")}
               </div>
-              <div className="text-xl mt-2 opacity-90">Min</div>
+              <div className="text-lg mt-1 opacity-90">Min</div>
             </div>
-            <div className="text-6xl font-light opacity-50">:</div>
+            <div className="text-5xl font-light opacity-50">:</div>
             <div className="text-center">
-              <div className="text-6xl font-bold tabular-nums">
+              <div className="text-5xl font-bold tabular-nums">
                 {elapsedTime.seconds.toString().padStart(2, "0")}
               </div>
-              <div className="text-xl mt-2 opacity-90">Sek</div>
+              <div className="text-lg mt-1 opacity-90">Sek</div>
             </div>
           </div>
         </div>
 
-        <p className="text-2xl text-muted-foreground mb-8">
-          Sicherheit ist unsere Priorität
-        </p>
-
         {/* Record Display */}
-        <div className="bg-accent/20 border-2 border-accent rounded-xl px-8 py-4">
-          <p className="text-sm text-muted-foreground mb-1">
+        <div className="bg-accent/20 border-2 border-accent rounded-xl px-6 py-3 mt-6">
+          <p className="text-xs text-muted-foreground mb-1">
             🏆 Längste unfallfreie Zeit
           </p>
-          <p className="text-3xl font-bold text-accent">
+          <p className="text-2xl font-bold text-accent">
             {recordDays} {recordDays === 1 ? 'Tag' : 'Tage'}
           </p>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="p-8">
-        <div className="text-center text-sm text-muted-foreground">
-          Sicherheit geht vor
-        </div>
-      </footer>
     </div>
   );
 };
