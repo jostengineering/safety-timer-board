@@ -14,10 +14,16 @@ interface ServerTimeResult {
 }
 
 const DEFAULT_CONFIG: ServerTimeConfig = {
-  apiUrl: "https://worldtimeapi.org/api/timezone/Europe/Berlin",
+  apiUrl: "https://timeapi.io/api/time/current/zone?timeZone=Europe/Berlin",
   timezone: "Europe/Berlin",
   enabled: true,
 };
+
+// Fallback APIs to try if primary fails
+const FALLBACK_APIS = [
+  "https://timeapi.io/api/time/current/zone?timeZone=Europe/Berlin",
+  "https://worldtimeapi.org/api/timezone/Europe/Berlin",
+];
 
 export const getTimeApiConfig = (): ServerTimeConfig => {
   try {
@@ -38,6 +44,32 @@ export const saveTimeApiConfig = (config: ServerTimeConfig) => {
   localStorage.setItem("timeApiConfig", JSON.stringify(config));
 };
 
+// Parse time from various API response formats
+const parseTimeFromResponse = (data: unknown): number | null => {
+  if (!data || typeof data !== "object") return null;
+  
+  const d = data as Record<string, unknown>;
+  
+  // worldtimeapi.org format: { unixtime: 1234567890 }
+  if (typeof d.unixtime === "number") {
+    return d.unixtime * 1000;
+  }
+  
+  // timeapi.io format: { dateTime: "2024-01-15T12:30:45.123" }
+  if (typeof d.dateTime === "string") {
+    const time = new Date(d.dateTime).getTime();
+    if (!isNaN(time)) return time;
+  }
+  
+  // Generic datetime field
+  if (typeof d.datetime === "string") {
+    const time = new Date(d.datetime).getTime();
+    if (!isNaN(time)) return time;
+  }
+  
+  return null;
+};
+
 // Fetch current time from NTP server - returns unix timestamp in ms
 export const fetchNtpTime = async (): Promise<number | null> => {
   const config = getTimeApiConfig();
@@ -46,31 +78,34 @@ export const fetchNtpTime = async (): Promise<number | null> => {
     return null;
   }
 
-  try {
-    const response = await fetch(config.apiUrl);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+  // Try configured API first, then fallbacks
+  const apisToTry = [config.apiUrl, ...FALLBACK_APIS.filter(url => url !== config.apiUrl)];
+  
+  for (const apiUrl of apisToTry) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const response = await fetch(apiUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        continue;
+      }
+      
+      const data = await response.json();
+      const serverTimeMs = parseTimeFromResponse(data);
+      
+      if (serverTimeMs && !isNaN(serverTimeMs)) {
+        return serverTimeMs;
+      }
+    } catch {
+      // Try next API
+      continue;
     }
-    
-    const data = await response.json();
-    
-    let serverTimeMs: number;
-    if (typeof data.unixtime === "number") {
-      serverTimeMs = data.unixtime * 1000;
-    } else if (data.datetime) {
-      serverTimeMs = new Date(data.datetime).getTime();
-    } else {
-      throw new Error("Unknown API format");
-    }
-
-    if (isNaN(serverTimeMs)) {
-      throw new Error("Invalid server time");
-    }
-
-    return serverTimeMs;
-  } catch {
-    return null;
   }
+  
+  return null;
 };
 
 export const useServerTime = (): ServerTimeResult => {
@@ -91,37 +126,42 @@ export const useServerTime = (): ServerTimeResult => {
       return;
     }
 
-    try {
-      const response = await fetch(config.apiUrl);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+    // Try configured API first, then fallbacks
+    const apisToTry = [config.apiUrl, ...FALLBACK_APIS.filter(url => url !== config.apiUrl)];
+    
+    for (const apiUrl of apisToTry) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const response = await fetch(apiUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          continue;
+        }
+        
+        const data = await response.json();
+        const localTimeAtFetch = Date.now();
+        const serverTimeMs = parseTimeFromResponse(data);
+        
+        if (serverTimeMs && !isNaN(serverTimeMs)) {
+          setNtpReference({ ntpTime: serverTimeMs, localTime: localTimeAtFetch });
+          setCurrentTime(new Date(serverTimeMs));
+          setIsOnline(true);
+          setLastSync(new Date());
+          setError(null);
+          return; // Success!
+        }
+      } catch {
+        // Try next API
+        continue;
       }
-      
-      const data = await response.json();
-      const localTimeAtFetch = Date.now();
-      
-      let serverTimeMs: number;
-      if (typeof data.unixtime === "number") {
-        serverTimeMs = data.unixtime * 1000;
-      } else if (data.datetime) {
-        serverTimeMs = new Date(data.datetime).getTime();
-      } else {
-        throw new Error("Unbekanntes API-Format");
-      }
-
-      if (isNaN(serverTimeMs)) {
-        throw new Error("Ungültige Serverzeit");
-      }
-
-      setNtpReference({ ntpTime: serverTimeMs, localTime: localTimeAtFetch });
-      setCurrentTime(new Date(serverTimeMs));
-      setIsOnline(true);
-      setLastSync(new Date());
-      setError(null);
-    } catch (err) {
-      setIsOnline(false);
-      setError(err instanceof Error ? err.message : "Verbindungsfehler");
     }
+    
+    // All APIs failed
+    setIsOnline(false);
+    setError("Alle Zeit-APIs nicht erreichbar");
   }, []);
 
   // Initial sync and periodic re-sync every 30 seconds
