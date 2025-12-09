@@ -78,6 +78,9 @@ export const useServerTime = (): ServerTimeResult => {
   const [isOnline, setIsOnline] = useState(false);
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // Store the last fetched NTP time and when we fetched it
+  const [ntpReference, setNtpReference] = useState<{ ntpTime: number; localTime: number } | null>(null);
 
   const fetchServerTime = useCallback(async () => {
     const config = getTimeApiConfig();
@@ -95,6 +98,7 @@ export const useServerTime = (): ServerTimeResult => {
       }
       
       const data = await response.json();
+      const localTimeAtFetch = Date.now();
       
       let serverTimeMs: number;
       if (typeof data.unixtime === "number") {
@@ -109,6 +113,7 @@ export const useServerTime = (): ServerTimeResult => {
         throw new Error("Ungültige Serverzeit");
       }
 
+      setNtpReference({ ntpTime: serverTimeMs, localTime: localTimeAtFetch });
       setCurrentTime(new Date(serverTimeMs));
       setIsOnline(true);
       setLastSync(new Date());
@@ -119,12 +124,26 @@ export const useServerTime = (): ServerTimeResult => {
     }
   }, []);
 
-  // Initial sync and periodic re-sync every 10 seconds
+  // Initial sync and periodic re-sync every 30 seconds
   useEffect(() => {
     fetchServerTime();
-    const syncInterval = setInterval(fetchServerTime, 10000);
+    const syncInterval = setInterval(fetchServerTime, 30000);
     return () => clearInterval(syncInterval);
   }, [fetchServerTime]);
+
+  // Update time every second by interpolating from last NTP fetch
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (ntpReference) {
+        const elapsed = Date.now() - ntpReference.localTime;
+        setCurrentTime(new Date(ntpReference.ntpTime + elapsed));
+      } else {
+        setCurrentTime(new Date());
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [ntpReference]);
 
   return { currentTime, isOnline, lastSync, error };
 };
