@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useServerTime } from "@/hooks/useServerTime";
 import asbLogo from "@/assets/asb-logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
   const [elapsedTime, setElapsedTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [recordDays, setRecordDays] = useState(0);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const { currentTime, isOnline } = useServerTime();
 
   useEffect(() => {
     // Get last accident timestamp from localStorage
@@ -24,38 +25,29 @@ const Index = () => {
     if (savedRecord) {
       setRecordDays(parseInt(savedRecord));
     }
-
-    // Update elapsed time every second
-    const timer = setInterval(() => {
-      const now = new Date();
-      const diff = now.getTime() - startDate.getTime();
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      setElapsedTime({ days, hours, minutes, seconds });
-
-      // Update record if current days exceeds it
-      const currentRecord = parseInt(localStorage.getItem("recordDays") || "0");
-      if (days > currentRecord) {
-        localStorage.setItem("recordDays", days.toString());
-        setRecordDays(days);
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
   }, []);
 
+  // Update elapsed time based on server time
   useEffect(() => {
-    // Update current time every second
-    const clock = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+    const lastAccident = localStorage.getItem("lastAccidentDate");
+    const startDate = lastAccident ? new Date(lastAccident) : new Date();
+    
+    const diff = currentTime.getTime() - startDate.getTime();
 
-    return () => clearInterval(clock);
-  }, []);
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    setElapsedTime({ days, hours, minutes, seconds });
+
+    // Update record if current days exceeds it
+    const currentRecord = parseInt(localStorage.getItem("recordDays") || "0");
+    if (days > currentRecord) {
+      localStorage.setItem("recordDays", days.toString());
+      setRecordDays(days);
+    }
+  }, [currentTime]);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString("de-DE", {
@@ -79,8 +71,9 @@ const Index = () => {
       <header className="relative p-2 sm:p-4">
         <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex items-center gap-1 sm:gap-3">
           <div className="text-right hidden sm:block">
-            <div className="text-xl sm:text-3xl font-bold text-foreground tabular-nums">
+            <div className="text-xl sm:text-3xl font-bold text-foreground tabular-nums flex items-center gap-2">
               {formatTime(currentTime)}
+              <span className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-500" : "bg-muted-foreground"}`} title={isOnline ? "Zeit-API verbunden" : "Systemzeit"} />
             </div>
             <div className="text-xs sm:text-sm text-muted-foreground">
               {formatDate(currentTime)}
