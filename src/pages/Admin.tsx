@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { getTimeApiConfig, saveTimeApiConfig, useServerTime } from "@/hooks/useServerTime";
+import { getTimeApiConfig, saveTimeApiConfig, useServerTime, fetchNtpTime } from "@/hooks/useServerTime";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -66,14 +66,30 @@ const Admin = () => {
     }
   };
 
-  const handleResetTimer = () => {
-    const now = new Date();
-    localStorage.setItem("lastAccidentDate", now.toISOString());
-    setLastAccidentDate(now);
-    toast({
-      title: "Timer zurückgesetzt",
-      description: "Der Unfallzähler wurde auf 0 zurückgesetzt",
-    });
+  const handleResetTimer = async () => {
+    // Fetch NTP time for the reset timestamp
+    const ntpTime = await fetchNtpTime();
+    
+    if (ntpTime) {
+      // Use NTP server time
+      const resetDate = new Date(ntpTime);
+      localStorage.setItem("lastAccidentDate", resetDate.toISOString());
+      setLastAccidentDate(resetDate);
+      toast({
+        title: "Timer zurückgesetzt",
+        description: "Der Unfallzähler wurde mit NTP-Zeit auf 0 zurückgesetzt",
+      });
+    } else {
+      // Fallback to system time if NTP fails
+      const now = new Date();
+      localStorage.setItem("lastAccidentDate", now.toISOString());
+      setLastAccidentDate(now);
+      toast({
+        title: "Timer zurückgesetzt",
+        description: "Der Unfallzähler wurde auf 0 zurückgesetzt (Systemzeit - NTP nicht erreichbar)",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSaveTimeApiConfig = () => {
