@@ -14,7 +14,8 @@ interface ServerTimeResult {
 }
 
 interface TimeSync {
-  offset: number;
+  serverUnixTime: number; // Server time in ms when synced
+  localUnixTime: number;  // Local time in ms when synced
   lastSync: string;
 }
 
@@ -52,34 +53,43 @@ const getStoredTimeSync = (): TimeSync | null => {
   return null;
 };
 
-const saveTimeSync = (offset: number) => {
+const saveTimeSync = (serverUnixTime: number, localUnixTime: number) => {
   const sync: TimeSync = {
-    offset,
+    serverUnixTime,
+    localUnixTime,
     lastSync: new Date().toISOString(),
   };
   localStorage.setItem("timeSync", JSON.stringify(sync));
 };
 
-export const useServerTime = (): ServerTimeResult => {
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [isOnline, setIsOnline] = useState(false);
-  const [lastSync, setLastSync] = useState<Date | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [timeOffset, setTimeOffset] = useState(() => {
-    // Initialize from localStorage
-    const stored = getStoredTimeSync();
-    return stored?.offset ?? 0;
-  });
+// Calculate current server time based on stored sync point
+const calculateServerTime = (): Date => {
+  const stored = getStoredTimeSync();
+  const config = getTimeApiConfig();
+  
+  if (!config.enabled || !stored) {
+    return new Date();
+  }
+  
+  // Time elapsed since sync
+  const elapsedSinceSync = Date.now() - stored.localUnixTime;
+  // Current server time = server time at sync + elapsed time
+  const currentServerTime = stored.serverUnixTime + elapsedSinceSync;
+  
+  return new Date(currentServerTime);
+};
 
-  // Load stored sync on mount
-  useEffect(() => {
+export const useServerTime = (): ServerTimeResult => {
+  const [currentTime, setCurrentTime] = useState(() => calculateServerTime());
+  const [isOnline, setIsOnline] = useState(() => {
     const stored = getStoredTimeSync();
-    if (stored) {
-      setTimeOffset(stored.offset);
-      setLastSync(new Date(stored.lastSync));
-      setIsOnline(true);
-    }
-  }, []);
+    return stored !== null && getTimeApiConfig().enabled;
+  });
+  const [lastSync, setLastSync] = useState<Date | null>(() => {
+    const stored = getStoredTimeSync();
+    return stored ? new Date(stored.lastSync) : null;
+  });
+  const [error, setError] = useState<string | null>(null);
 
   const fetchServerTime = useCallback(async () => {
     const config = getTimeApiConfig();
@@ -97,41 +107,48 @@ export const useServerTime = (): ServerTimeResult => {
       }
       
       const data = await response.json();
+      const localTimeAtReceive = Date.now();
       
-      // worldtimeapi.org returns datetime in ISO format
-      let serverTime: Date;
-      if (data.datetime) {
-        serverTime = new Date(data.datetime);
-      } else if (data.unixtime) {
-        serverTime = new Date(data.unixtime * 1000);
+      // Get server time in milliseconds
+      let serverTimeMs: number;
+      if (data.unixtime) {
+        serverTimeMs = data.unixtime * 1000;
+      } else if (data.datetime) {
+        serverTimeMs = new Date(data.datetime).getTime();
       } else {
         throw new Error("Unbekanntes API-Format");
       }
 
-      const localTime = new Date();
-      const offset = serverTime.getTime() - localTime.getTime();
+      // Save sync point to localStorage
+      saveTimeSync(serverTimeMs, localTimeAtReceive);
       
-      setTimeOffset(offset);
-      saveTimeSync(offset); // Store in localStorage for all windows
       setIsOnline(true);
       setLastSync(new Date());
       setError(null);
     } catch (err) {
-      // If we have a stored offset, keep using it
       const stored = getStoredTimeSync();
       if (stored) {
-        setTimeOffset(stored.offset);
+        setIsOnline(true);
         setLastSync(new Date(stored.lastSync));
+      } else {
+        setIsOnline(false);
       }
-      setIsOnline(false);
       setError(err instanceof Error ? err.message : "Verbindungsfehler");
     }
   }, []);
 
   // Initial sync and periodic re-sync every 5 minutes
   useEffect(() => {
-    fetchServerTime();
-    const syncInterval = setInterval(fetchServerTime, 5 * 60 * 1000);
+    // Only fetch if we don't have a recent sync (within last 5 minutes)
+    const stored = getStoredTimeSync();
+    const fiveMinutes = 5 * 60 * 1000;
+    const needsSync = !stored || (Date.now() - new Date(stored.lastSync).getTime() > fiveMinutes);
+    
+    if (needsSync) {
+      fetchServerTime();
+    }
+    
+    const syncInterval = setInterval(fetchServerTime, fiveMinutes);
     return () => clearInterval(syncInterval);
   }, [fetchServerTime]);
 
@@ -141,7 +158,6 @@ export const useServerTime = (): ServerTimeResult => {
       if (e.key === "timeSync" && e.newValue) {
         try {
           const sync: TimeSync = JSON.parse(e.newValue);
-          setTimeOffset(sync.offset);
           setLastSync(new Date(sync.lastSync));
           setIsOnline(true);
         } catch {
@@ -154,19 +170,14 @@ export const useServerTime = (): ServerTimeResult => {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  // Update time every second using offset
+  // Update time every second using stored sync point
   useEffect(() => {
     const timer = setInterval(() => {
-      const config = getTimeApiConfig();
-      if (config.enabled && timeOffset !== 0) {
-        setCurrentTime(new Date(Date.now() + timeOffset));
-      } else {
-        setCurrentTime(new Date());
-      }
+      setCurrentTime(calculateServerTime());
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeOffset]);
+  }, []);
 
   return { currentTime, isOnline, lastSync, error };
 };
