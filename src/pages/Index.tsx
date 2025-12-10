@@ -3,35 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useServerTime } from "@/hooks/useServerTime";
+import { useAccidentConfig } from "@/hooks/useAccidentConfig";
 import asbLogo from "@/assets/asb-logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
   const [elapsedTime, setElapsedTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [recordDays, setRecordDays] = useState(0);
   const { currentTime, isOnline } = useServerTime();
+  const { config, isLoading, updateRecord } = useAccidentConfig();
 
+  // Update elapsed time based on server time and database config
   useEffect(() => {
-    // Get last accident timestamp from localStorage
-    const lastAccident = localStorage.getItem("lastAccidentDate");
-    const startDate = lastAccident ? new Date(lastAccident) : new Date();
-
-    if (!lastAccident) {
-      localStorage.setItem("lastAccidentDate", startDate.toISOString());
-    }
-
-    // Get record from localStorage
-    const savedRecord = localStorage.getItem("recordDays");
-    if (savedRecord) {
-      setRecordDays(parseInt(savedRecord));
-    }
-  }, []);
-
-  // Update elapsed time based on server time
-  useEffect(() => {
-    const lastAccident = localStorage.getItem("lastAccidentDate");
-    const startDate = lastAccident ? new Date(lastAccident) : new Date();
+    if (!config) return;
     
+    const startDate = config.lastAccidentDate;
     const diff = currentTime.getTime() - startDate.getTime();
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -39,15 +24,13 @@ const Index = () => {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    setElapsedTime({ days, hours, minutes, seconds });
+    setElapsedTime({ days: Math.max(0, days), hours: Math.max(0, hours), minutes: Math.max(0, minutes), seconds: Math.max(0, seconds) });
 
     // Update record if current days exceeds it
-    const currentRecord = parseInt(localStorage.getItem("recordDays") || "0");
-    if (days > currentRecord) {
-      localStorage.setItem("recordDays", days.toString());
-      setRecordDays(days);
+    if (days > config.recordDays) {
+      updateRecord(days);
     }
-  }, [currentTime]);
+  }, [currentTime, config, updateRecord]);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString("de-DE", {
@@ -155,10 +138,10 @@ const Index = () => {
             </div>
             <div className="text-right">
               <p className="text-[clamp(2rem,4vw,8rem)] font-bold text-red-600 dark:text-red-500 tabular-nums leading-none">
-                {recordDays}
+                {config?.recordDays ?? 0}
               </p>
               <p className="text-[clamp(0.75rem,1vw,1.5rem)] text-muted-foreground mt-2">
-                {recordDays === 1 ? 'Tag' : 'Tage'}
+                {(config?.recordDays ?? 0) === 1 ? 'Tag' : 'Tage'}
               </p>
             </div>
           </div>

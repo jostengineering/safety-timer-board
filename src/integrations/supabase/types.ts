@@ -14,7 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      accident_config: {
+        Row: {
+          id: number
+          last_accident_date: string
+          record_days: number
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          last_accident_date?: string
+          record_days?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          last_accident_date?: string
+          record_days?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
