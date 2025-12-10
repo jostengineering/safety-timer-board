@@ -9,7 +9,7 @@ import asbLogo from "@/assets/asb-logo.png";
 const Index = () => {
   const navigate = useNavigate();
   const [elapsedTime, setElapsedTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const { currentTime, isOnline } = useServerTime();
+  const { currentTime } = useServerTime();
   const { config, isLoading, updateRecord } = useAccidentConfig();
 
   // Update elapsed time based on server time and database config
@@ -54,9 +54,8 @@ const Index = () => {
       <header className="relative p-2 sm:p-4">
         <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex items-center gap-1 sm:gap-3">
           <div className="text-right hidden sm:block">
-            <div className="text-xl sm:text-3xl font-bold text-foreground tabular-nums flex items-center gap-2">
+            <div className="text-xl sm:text-3xl font-bold text-foreground tabular-nums">
               {formatTime(currentTime)}
-              <span className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-500" : "bg-muted-foreground"}`} title={isOnline ? "Zeit-API verbunden" : "Systemzeit"} />
             </div>
             <div className="text-xs sm:text-sm text-muted-foreground">
               {formatDate(currentTime)}

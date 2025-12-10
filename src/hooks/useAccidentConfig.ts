@@ -84,22 +84,17 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
 
   const resetTimer = useCallback(async (): Promise<boolean> => {
     try {
-      // Use database server time (now()) for consistency
-      const { error: updateError } = await supabase
-        .from("accident_config")
-        .update({
-          last_accident_date: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", 1);
+      // Use Postgres now() via RPC for server-side timestamp
+      const { data, error: rpcError } = await supabase.rpc("reset_accident_timer");
 
-      if (updateError) {
-        console.error("Error resetting timer:", updateError);
-        setError(updateError.message);
+      if (rpcError) {
+        console.error("Error resetting timer:", rpcError);
+        setError(rpcError.message);
         return false;
       }
 
-      // Refetch to get the server timestamp
+      console.log("Timer reset with server timestamp:", data);
+      // Refetch to get the updated config
       await fetchConfig();
       return true;
     } catch (err) {
