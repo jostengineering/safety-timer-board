@@ -40,7 +40,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      reset_accident_timer: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
