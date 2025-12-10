@@ -6,19 +6,20 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { getTimeApiConfig, saveTimeApiConfig, useServerTime, fetchNtpTime } from "@/hooks/useServerTime";
+import { getTimeApiConfig, saveTimeApiConfig, useServerTime } from "@/hooks/useServerTime";
+import { useAccidentConfig } from "@/hooks/useAccidentConfig";
 
 const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [password, setPassword] = useState("");
-  const [lastAccidentDate, setLastAccidentDate] = useState<Date | null>(null);
   
   // Time API settings
   const [timeApiUrl, setTimeApiUrl] = useState("");
   const [timeApiEnabled, setTimeApiEnabled] = useState(true);
   const { currentTime, isOnline, lastSync, error } = useServerTime();
+  const { config, resetTimer, isLoading } = useAccidentConfig();
 
   // Simple password - in production, this should be more secure
   const ADMIN_PASSWORD = "AsbBrandenburg";
@@ -28,17 +29,9 @@ const Admin = () => {
     const loggedIn = sessionStorage.getItem("adminLoggedIn");
     if (loggedIn === "true") {
       setIsLoggedIn(true);
-      loadLastAccidentDate();
       loadTimeApiConfig();
     }
   }, []);
-
-  const loadLastAccidentDate = () => {
-    const lastAccident = localStorage.getItem("lastAccidentDate");
-    if (lastAccident) {
-      setLastAccidentDate(new Date(lastAccident));
-    }
-  };
 
   const loadTimeApiConfig = () => {
     const config = getTimeApiConfig();
@@ -51,7 +44,6 @@ const Admin = () => {
     if (password === ADMIN_PASSWORD) {
       setIsLoggedIn(true);
       sessionStorage.setItem("adminLoggedIn", "true");
-      loadLastAccidentDate();
       loadTimeApiConfig();
       toast({
         title: "Anmeldung erfolgreich",
@@ -67,26 +59,16 @@ const Admin = () => {
   };
 
   const handleResetTimer = async () => {
-    // Fetch NTP time for the reset timestamp
-    const ntpTime = await fetchNtpTime();
-    
-    if (ntpTime) {
-      // Use NTP server time
-      const resetDate = new Date(ntpTime);
-      localStorage.setItem("lastAccidentDate", resetDate.toISOString());
-      setLastAccidentDate(resetDate);
+    const success = await resetTimer();
+    if (success) {
       toast({
         title: "Timer zurückgesetzt",
-        description: "Der Unfallzähler wurde mit NTP-Zeit auf 0 zurückgesetzt",
+        description: "Der Unfallzähler wurde auf 0 zurückgesetzt (Datenbank-Zeit)",
       });
     } else {
-      // Fallback to system time if NTP fails
-      const now = new Date();
-      localStorage.setItem("lastAccidentDate", now.toISOString());
-      setLastAccidentDate(now);
       toast({
-        title: "Timer zurückgesetzt",
-        description: "Der Unfallzähler wurde auf 0 zurückgesetzt (Systemzeit - NTP nicht erreichbar)",
+        title: "Fehler",
+        description: "Timer konnte nicht zurückgesetzt werden",
         variant: "destructive",
       });
     }
@@ -166,27 +148,34 @@ const Admin = () => {
           <CardHeader>
             <CardTitle>Unfallzähler Management</CardTitle>
             <CardDescription>
-              Verwalten Sie den Unfallzähler für die Hauptanzeige
+              Verwalten Sie den Unfallzähler für die Hauptanzeige (Daten werden in der Datenbank gespeichert)
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {lastAccidentDate && (
+            {isLoading ? (
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="text-sm text-muted-foreground">Lade Daten...</p>
+              </div>
+            ) : config && (
               <div className="p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground mb-1">
                   Letzter Unfall zurückgesetzt am:
                 </p>
                 <p className="text-lg font-semibold">
-                  {lastAccidentDate.toLocaleDateString("de-DE", {
+                  {config.lastAccidentDate.toLocaleDateString("de-DE", {
                     weekday: "long",
                     day: "2-digit",
                     month: "long",
                     year: "numeric",
                   })}
                   {" um "}
-                  {lastAccidentDate.toLocaleTimeString("de-DE", {
+                  {config.lastAccidentDate.toLocaleTimeString("de-DE", {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Rekord: {config.recordDays} Tage
                 </p>
               </div>
             )}
