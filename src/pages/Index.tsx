@@ -122,7 +122,7 @@ const Index = () => {
         </div>
 
         {/* Record Display */}
-        <div className="mt-4 sm:mt-8 bg-gradient-to-r from-red-500/10 via-yellow-500/20 to-red-500/10 border border-red-500/30 rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4 md:py-6 lg:py-8 backdrop-blur-sm">
+        <div className="mt-4 sm:mt-8 border border-red-500 rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4 md:py-6 lg:py-8">
           <div className="flex items-center justify-between gap-3 sm:gap-6 lg:gap-10">
             <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
               <div className="text-[clamp(1.5rem,2.5vw,4rem)]">🏆</div>
