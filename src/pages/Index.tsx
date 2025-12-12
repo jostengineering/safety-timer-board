@@ -89,34 +89,34 @@ const Index = () => {
         </h1>
 
         {/* Timer Display */}
-        <div className="bg-gradient-to-br from-red-600 to-red-700 text-white rounded-2xl sm:rounded-3xl px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6 md:py-8 lg:py-12 shadow-lg mb-4 sm:mb-6">
-          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+        <div className="border border-border rounded-2xl sm:rounded-3xl px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6 md:py-8 lg:py-12 mb-4 sm:mb-6">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 text-foreground">
             <div className="text-center">
               <div className="text-[clamp(2rem,6vw,12rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.days.toString().padStart(3, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1.2vw,2rem)] mt-2 opacity-90">Tage</div>
+              <div className="text-[clamp(0.75rem,1.2vw,2rem)] mt-2 text-muted-foreground">Tage</div>
             </div>
-            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-50">:</div>
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light text-muted-foreground">:</div>
             <div className="text-center">
               <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.hours.toString().padStart(2, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-90">Std</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 text-muted-foreground">Std</div>
             </div>
-            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-50">:</div>
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light text-muted-foreground">:</div>
             <div className="text-center">
               <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.minutes.toString().padStart(2, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-90">Min</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 text-muted-foreground">Min</div>
             </div>
-            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light opacity-50">:</div>
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light text-muted-foreground">:</div>
             <div className="text-center">
               <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.seconds.toString().padStart(2, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 opacity-90">Sek</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 text-muted-foreground">Sek</div>
             </div>
           </div>
         </div>
