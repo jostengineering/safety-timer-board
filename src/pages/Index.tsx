@@ -95,28 +95,28 @@ const Index = () => {
               <div className="text-[clamp(2rem,6vw,12rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.days.toString().padStart(3, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1.2vw,2rem)] mt-2 text-muted-foreground">Tage</div>
+              <div className="text-[clamp(0.75rem,1.2vw,2rem)] mt-2 text-foreground">Tage</div>
             </div>
-            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light text-muted-foreground">:</div>
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light text-foreground/50">:</div>
             <div className="text-center">
               <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.hours.toString().padStart(2, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 text-muted-foreground">Std</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 text-foreground">Std</div>
             </div>
-            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light text-muted-foreground">:</div>
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light text-foreground/50">:</div>
             <div className="text-center">
               <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.minutes.toString().padStart(2, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 text-muted-foreground">Min</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 text-foreground">Min</div>
             </div>
-            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light text-muted-foreground">:</div>
+            <div className="text-[clamp(1.5rem,4vw,8rem)] font-light text-foreground/50">:</div>
             <div className="text-center">
               <div className="text-[clamp(1.5rem,4vw,8rem)] font-bold tabular-nums leading-none">
                 {elapsedTime.seconds.toString().padStart(2, "0")}
               </div>
-              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 text-muted-foreground">Sek</div>
+              <div className="text-[clamp(0.75rem,1vw,1.5rem)] mt-2 text-foreground">Sek</div>
             </div>
           </div>
         </div>
