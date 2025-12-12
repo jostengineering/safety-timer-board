@@ -125,7 +125,6 @@ const Index = () => {
         <div className="mt-4 sm:mt-8 border border-red-500 rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4 md:py-6 lg:py-8">
           <div className="flex items-center justify-between gap-3 sm:gap-6 lg:gap-10">
             <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
-              <div className="text-[clamp(1.5rem,2.5vw,4rem)]">🏆</div>
               <div>
                 <p className="text-[clamp(0.75rem,1vw,1.25rem)] uppercase tracking-wide text-muted-foreground font-semibold mb-1">
                   Rekord
