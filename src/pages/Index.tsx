@@ -126,10 +126,10 @@ const Index = () => {
           <div className="flex items-center justify-between gap-3 sm:gap-6 lg:gap-10">
             <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
               <div>
-                <p className="text-[clamp(0.75rem,1vw,1.25rem)] uppercase tracking-wide text-muted-foreground font-semibold mb-1">
+                <p className="text-[clamp(0.75rem,1vw,1.25rem)] uppercase tracking-wide text-foreground font-semibold mb-1">
                   Rekord
                 </p>
-                <p className="text-[clamp(0.75rem,0.9vw,1.1rem)] text-muted-foreground hidden sm:block">
+                <p className="text-[clamp(0.75rem,0.9vw,1.1rem)] text-foreground hidden sm:block">
                   Längste unfallfreie Zeit
                 </p>
               </div>
@@ -138,7 +138,7 @@ const Index = () => {
               <p className="text-[clamp(2rem,4vw,8rem)] font-bold text-red-600 dark:text-red-500 tabular-nums leading-none">
                 {config?.recordDays ?? 0}
               </p>
-              <p className="text-[clamp(0.75rem,1vw,1.5rem)] text-muted-foreground mt-2">
+              <p className="text-[clamp(0.75rem,1vw,1.5rem)] text-foreground mt-2">
                 {(config?.recordDays ?? 0) === 1 ? 'Tag' : 'Tage'}
               </p>
             </div>
