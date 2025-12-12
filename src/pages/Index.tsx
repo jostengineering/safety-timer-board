@@ -84,7 +84,7 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-3 sm:px-8 py-0">
-        <h1 className="text-[clamp(1.5rem,3vw,4rem)] font-bold text-foreground mb-4 sm:mb-8">
+        <h1 className="text-[clamp(2rem,5vw,6rem)] font-bold text-foreground mb-4 sm:mb-8">
           Unfallfrei seit:
         </h1>
 
