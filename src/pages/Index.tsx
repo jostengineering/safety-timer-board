@@ -89,7 +89,7 @@ const Index = () => {
         </h1>
 
         {/* Timer Display */}
-        <div className="border border-red-500 rounded-2xl sm:rounded-3xl px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6 md:py-8 lg:py-12 mb-4 sm:mb-6">
+        <div className="border-2 border-red-500 rounded-2xl sm:rounded-3xl px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6 md:py-8 lg:py-12 mb-4 sm:mb-6">
           <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 text-foreground">
             <div className="text-center">
               <div className="text-[clamp(2rem,6vw,12rem)] font-bold tabular-nums leading-none">
@@ -122,7 +122,7 @@ const Index = () => {
         </div>
 
         {/* Record Display */}
-        <div className="mt-4 sm:mt-8 border border-red-500 rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4 md:py-6 lg:py-8">
+        <div className="mt-4 sm:mt-8 border-2 border-red-500 rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4 md:py-6 lg:py-8">
           <div className="flex items-center justify-between gap-3 sm:gap-6 lg:gap-10">
             <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
               <div>
