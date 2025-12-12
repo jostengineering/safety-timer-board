@@ -89,7 +89,7 @@ const Index = () => {
         </h1>
 
         {/* Timer Display */}
-        <div className="border border-border rounded-2xl sm:rounded-3xl px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6 md:py-8 lg:py-12 mb-4 sm:mb-6">
+        <div className="border border-red-500 rounded-2xl sm:rounded-3xl px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-6 md:py-8 lg:py-12 mb-4 sm:mb-6">
           <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 text-foreground">
             <div className="text-center">
               <div className="text-[clamp(2rem,6vw,12rem)] font-bold tabular-nums leading-none">
