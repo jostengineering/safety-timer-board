@@ -61,7 +61,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      reset_accident_timer: { Args: never; Returns: string }
+      reset_accident_timer: { Args: never; Returns: Json }
     }
     Enums: {
       [_ in never]: never
