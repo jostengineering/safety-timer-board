@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface AccidentConfig {
@@ -18,6 +18,7 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
   const [config, setConfig] = useState<AccidentConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const lastUpdatedRecord = useRef<number>(0);
 
   const fetchConfig = useCallback(async () => {
     try {
@@ -38,6 +39,7 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
           lastAccidentDate: new Date(data.last_accident_date),
           recordDays: data.record_days,
         });
+        lastUpdatedRecord.current = data.record_days;
         setError(null);
       }
     } catch (err) {
@@ -72,6 +74,7 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
               lastAccidentDate: new Date(newData.last_accident_date),
               recordDays: newData.record_days,
             });
+            lastUpdatedRecord.current = newData.record_days;
           }
         }
       )
@@ -105,7 +108,11 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
   }, [fetchConfig]);
 
   const updateRecord = useCallback(async (days: number): Promise<void> => {
-    if (!config || days <= config.recordDays) return;
+    // Only update if days is greater than what we've already updated to
+    if (days <= lastUpdatedRecord.current) return;
+    
+    // Optimistically update the ref to prevent duplicate updates
+    lastUpdatedRecord.current = days;
 
     try {
       const { error: updateError } = await supabase
@@ -118,11 +125,16 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
 
       if (updateError) {
         console.error("Error updating record:", updateError);
+        // Reset ref on error so it can retry
+        lastUpdatedRecord.current = config?.recordDays ?? 0;
+      } else {
+        console.log("Record updated to:", days);
       }
     } catch (err) {
       console.error("Unexpected error updating record:", err);
+      lastUpdatedRecord.current = config?.recordDays ?? 0;
     }
-  }, [config]);
+  }, [config?.recordDays]);
 
   return {
     config,
