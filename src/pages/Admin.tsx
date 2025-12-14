@@ -12,7 +12,8 @@ const Admin = () => {
   const { toast } = useToast();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [password, setPassword] = useState("");
-  const { config, resetTimer, isLoading } = useAccidentConfig();
+  const [newRecordDays, setNewRecordDays] = useState("");
+  const { config, resetTimer, setRecord, resetRecord, isLoading } = useAccidentConfig();
 
   // Simple password - in production, this should be more secure
   const ADMIN_PASSWORD = "AsbBrandenburg";
@@ -24,6 +25,12 @@ const Admin = () => {
       setIsLoggedIn(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (config) {
+      setNewRecordDays(config.recordDays.toString());
+    }
+  }, [config]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +61,49 @@ const Admin = () => {
       toast({
         title: "Fehler",
         description: "Timer konnte nicht zurückgesetzt werden",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSetRecord = async () => {
+    const days = parseInt(newRecordDays, 10);
+    if (isNaN(days) || days < 0) {
+      toast({
+        title: "Fehler",
+        description: "Bitte geben Sie eine gültige Zahl ein",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const success = await setRecord(days);
+    if (success) {
+      toast({
+        title: "Rekord aktualisiert",
+        description: `Rekord wurde auf ${days} Tage gesetzt`,
+      });
+    } else {
+      toast({
+        title: "Fehler",
+        description: "Rekord konnte nicht aktualisiert werden",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleResetRecord = async () => {
+    const success = await resetRecord();
+    if (success) {
+      setNewRecordDays("0");
+      toast({
+        title: "Rekord zurückgesetzt",
+        description: "Rekord wurde auf 0 Tage zurückgesetzt",
+      });
+    } else {
+      toast({
+        title: "Fehler",
+        description: "Rekord konnte nicht zurückgesetzt werden",
         variant: "destructive",
       });
     }
@@ -148,7 +198,7 @@ const Admin = () => {
                   })}
                 </p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Rekord: {config.recordDays} Tage
+                  Aktueller Rekord: <span className="font-semibold">{config.recordDays} Tage</span>
                 </p>
               </div>
             )}
@@ -166,6 +216,40 @@ const Admin = () => {
                 Dies setzt den Unfallzähler auf der Hauptseite zurück (verwendet Server-Zeit)
               </p>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Rekord-Verwaltung</CardTitle>
+            <CardDescription>
+              Setzen oder bearbeiten Sie den Rekord manuell
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Label htmlFor="recordDays" className="sr-only">Rekord in Tagen</Label>
+                <Input
+                  id="recordDays"
+                  type="number"
+                  min="0"
+                  value={newRecordDays}
+                  onChange={(e) => setNewRecordDays(e.target.value)}
+                  placeholder="Rekord in Tagen"
+                />
+              </div>
+              <Button onClick={handleSetRecord}>
+                Speichern
+              </Button>
+            </div>
+            <Button
+              onClick={handleResetRecord}
+              variant="outline"
+              className="w-full"
+            >
+              Rekord auf 0 zurücksetzen
+            </Button>
           </CardContent>
         </Card>
 

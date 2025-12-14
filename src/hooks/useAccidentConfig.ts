@@ -11,6 +11,8 @@ interface UseAccidentConfigResult {
   isLoading: boolean;
   error: string | null;
   resetTimer: () => Promise<boolean>;
+  setRecord: (days: number) => Promise<boolean>;
+  resetRecord: () => Promise<boolean>;
 }
 
 export const useAccidentConfig = (): UseAccidentConfigResult => {
@@ -147,10 +149,42 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
     }
   }, [fetchConfig]);
 
+  const setRecord = useCallback(async (days: number): Promise<boolean> => {
+    try {
+      const { error: updateError } = await supabase
+        .from("accident_config")
+        .update({
+          record_days: days,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", 1);
+
+      if (updateError) {
+        console.error("Error setting record:", updateError);
+        setError(updateError.message);
+        return false;
+      }
+
+      lastCheckedRecord.current = days;
+      setConfig(prev => prev ? { ...prev, recordDays: days } : null);
+      return true;
+    } catch (err) {
+      console.error("Unexpected error setting record:", err);
+      setError("Unerwarteter Fehler beim Setzen des Rekords");
+      return false;
+    }
+  }, []);
+
+  const resetRecord = useCallback(async (): Promise<boolean> => {
+    return setRecord(0);
+  }, [setRecord]);
+
   return {
     config,
     isLoading,
     error,
     resetTimer,
+    setRecord,
+    resetRecord,
   };
 };
