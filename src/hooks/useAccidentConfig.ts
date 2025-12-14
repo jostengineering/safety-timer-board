@@ -11,14 +11,13 @@ interface UseAccidentConfigResult {
   isLoading: boolean;
   error: string | null;
   resetTimer: () => Promise<boolean>;
-  updateRecord: (days: number) => Promise<void>;
 }
 
 export const useAccidentConfig = (): UseAccidentConfigResult => {
   const [config, setConfig] = useState<AccidentConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const lastUpdatedRecord = useRef<number>(0);
+  const lastCheckedRecord = useRef<number>(0);
 
   const fetchConfig = useCallback(async () => {
     try {
@@ -39,7 +38,7 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
           lastAccidentDate: new Date(data.last_accident_date),
           recordDays: data.record_days,
         });
-        lastUpdatedRecord.current = data.record_days;
+        lastCheckedRecord.current = data.record_days;
         setError(null);
       }
     } catch (err) {
@@ -54,6 +53,49 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
   useEffect(() => {
     fetchConfig();
   }, [fetchConfig]);
+
+  // Check and update record every 10 minutes
+  useEffect(() => {
+    const checkAndUpdateRecord = async () => {
+      if (!config) return;
+
+      const now = new Date();
+      const diff = now.getTime() - config.lastAccidentDate.getTime();
+      const currentDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+      if (currentDays > lastCheckedRecord.current) {
+        console.log(`Updating record: ${lastCheckedRecord.current} -> ${currentDays}`);
+        lastCheckedRecord.current = currentDays;
+
+        try {
+          const { error: updateError } = await supabase
+            .from("accident_config")
+            .update({
+              record_days: currentDays,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", 1);
+
+          if (updateError) {
+            console.error("Error updating record:", updateError);
+          } else {
+            console.log("Record updated successfully to:", currentDays);
+            setConfig(prev => prev ? { ...prev, recordDays: currentDays } : null);
+          }
+        } catch (err) {
+          console.error("Unexpected error updating record:", err);
+        }
+      }
+    };
+
+    // Check immediately on mount
+    checkAndUpdateRecord();
+
+    // Then check every 10 minutes (600000ms)
+    const interval = setInterval(checkAndUpdateRecord, 10 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [config?.lastAccidentDate]);
 
   // Realtime subscription
   useEffect(() => {
@@ -74,7 +116,7 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
               lastAccidentDate: new Date(newData.last_accident_date),
               recordDays: newData.record_days,
             });
-            lastUpdatedRecord.current = newData.record_days;
+            lastCheckedRecord.current = newData.record_days;
           }
         }
       )
@@ -87,7 +129,6 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
 
   const resetTimer = useCallback(async (): Promise<boolean> => {
     try {
-      // Use Postgres now() via RPC for server-side timestamp
       const { data, error: rpcError } = await supabase.rpc("reset_accident_timer");
 
       if (rpcError) {
@@ -97,7 +138,6 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
       }
 
       console.log("Timer reset with server timestamp:", data);
-      // Refetch to get the updated config
       await fetchConfig();
       return true;
     } catch (err) {
@@ -107,40 +147,10 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
     }
   }, [fetchConfig]);
 
-  const updateRecord = useCallback(async (days: number): Promise<void> => {
-    // Only update if days is greater than what we've already updated to
-    if (days <= lastUpdatedRecord.current) return;
-    
-    // Optimistically update the ref to prevent duplicate updates
-    lastUpdatedRecord.current = days;
-
-    try {
-      const { error: updateError } = await supabase
-        .from("accident_config")
-        .update({
-          record_days: days,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", 1);
-
-      if (updateError) {
-        console.error("Error updating record:", updateError);
-        // Reset ref on error so it can retry
-        lastUpdatedRecord.current = config?.recordDays ?? 0;
-      } else {
-        console.log("Record updated to:", days);
-      }
-    } catch (err) {
-      console.error("Unexpected error updating record:", err);
-      lastUpdatedRecord.current = config?.recordDays ?? 0;
-    }
-  }, [config?.recordDays]);
-
   return {
     config,
     isLoading,
     error,
     resetTimer,
-    updateRecord,
   };
 };
