@@ -10,7 +10,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [elapsedTime, setElapsedTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const { currentTime } = useServerTime();
-  const { config, isLoading, updateRecord } = useAccidentConfig();
+  const { config, isLoading } = useAccidentConfig();
 
   // Update elapsed time based on server time and database config
   useEffect(() => {
@@ -25,12 +25,7 @@ const Index = () => {
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
     setElapsedTime({ days: Math.max(0, days), hours: Math.max(0, hours), minutes: Math.max(0, minutes), seconds: Math.max(0, seconds) });
-
-    // Update record if current days exceeds it
-    if (days > config.recordDays) {
-      updateRecord(days);
-    }
-  }, [currentTime, config, updateRecord]);
+  }, [currentTime, config]);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString("de-DE", {
