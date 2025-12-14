@@ -35,6 +35,27 @@ export type Database = {
         }
         Relationships: []
       }
+      timer_reset_history: {
+        Row: {
+          created_at: string
+          id: string
+          previous_days: number
+          reset_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          previous_days?: number
+          reset_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          previous_days?: number
+          reset_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

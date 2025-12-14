@@ -6,6 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAccidentConfig } from "@/hooks/useAccidentConfig";
+import { supabase } from "@/integrations/supabase/client";
+
+interface ResetHistoryEntry {
+  id: string;
+  reset_at: string;
+  previous_days: number;
+}
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -13,7 +20,26 @@ const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [password, setPassword] = useState("");
   const [newRecordDays, setNewRecordDays] = useState("");
+  const [resetHistory, setResetHistory] = useState<ResetHistoryEntry[]>([]);
   const { config, resetTimer, setRecord, resetRecord, isLoading } = useAccidentConfig();
+
+  const fetchResetHistory = async () => {
+    const { data, error } = await supabase
+      .from("timer_reset_history")
+      .select("*")
+      .order("reset_at", { ascending: false })
+      .limit(20);
+    
+    if (!error && data) {
+      setResetHistory(data);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchResetHistory();
+    }
+  }, [isLoggedIn]);
 
   // Simple password - in production, this should be more secure
   const ADMIN_PASSWORD = "AsbBrandenburg";
@@ -53,6 +79,7 @@ const Admin = () => {
   const handleResetTimer = async () => {
     const success = await resetTimer();
     if (success) {
+      await fetchResetHistory();
       toast({
         title: "Timer zurückgesetzt",
         description: "Der Unfallzähler wurde auf 0 zurückgesetzt (Server-Zeit)",
@@ -250,6 +277,49 @@ const Admin = () => {
             >
               Rekord auf 0 zurücksetzen
             </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Reset-Historie</CardTitle>
+            <CardDescription>
+              Übersicht aller Timer-Zurücksetzungen
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {resetHistory.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Keine Einträge vorhanden</p>
+            ) : (
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {resetHistory.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="flex justify-between items-center p-3 bg-muted rounded-lg"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">
+                        {new Date(entry.reset_at).toLocaleDateString("de-DE", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
+                        {" um "}
+                        {new Date(entry.reset_at).toLocaleTimeString("de-DE", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-muted-foreground">
+                        Nach {entry.previous_days} Tagen
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
