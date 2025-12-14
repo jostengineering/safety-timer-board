@@ -58,15 +58,16 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
 
   // Check and update record every 10 minutes
   useEffect(() => {
-    const checkAndUpdateRecord = async () => {
-      if (!config) return;
+    if (!config) return;
 
+    const checkAndUpdateRecord = async () => {
       const now = new Date();
       const diff = now.getTime() - config.lastAccidentDate.getTime();
       const currentDays = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-      if (currentDays > lastCheckedRecord.current) {
-        console.log(`Updating record: ${lastCheckedRecord.current} -> ${currentDays}`);
+      // Only update if current days is greater than stored record
+      if (currentDays > config.recordDays && currentDays > lastCheckedRecord.current) {
+        console.log(`Updating record: ${config.recordDays} -> ${currentDays}`);
         lastCheckedRecord.current = currentDays;
 
         try {
@@ -82,7 +83,6 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
             console.error("Error updating record:", updateError);
           } else {
             console.log("Record updated successfully to:", currentDays);
-            setConfig(prev => prev ? { ...prev, recordDays: currentDays } : null);
           }
         } catch (err) {
           console.error("Unexpected error updating record:", err);
@@ -90,14 +90,11 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
       }
     };
 
-    // Check immediately on mount
-    checkAndUpdateRecord();
-
-    // Then check every 10 minutes (600000ms)
+    // Only check every 10 minutes, not on config change
     const interval = setInterval(checkAndUpdateRecord, 10 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [config?.lastAccidentDate]);
+  }, [config?.lastAccidentDate.getTime(), config?.recordDays]);
 
   // Realtime subscription
   useEffect(() => {
