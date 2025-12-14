@@ -131,6 +131,14 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
 
   const resetTimer = useCallback(async (): Promise<boolean> => {
     try {
+      // Calculate previous days before reset
+      let previousDays = 0;
+      if (config) {
+        const now = new Date();
+        const diff = now.getTime() - config.lastAccidentDate.getTime();
+        previousDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+      }
+
       const { data, error: rpcError } = await supabase.rpc("reset_accident_timer");
 
       if (rpcError) {
@@ -138,6 +146,11 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
         setError(rpcError.message);
         return false;
       }
+
+      // Log the reset to history
+      await supabase.from("timer_reset_history").insert({
+        previous_days: previousDays,
+      });
 
       console.log("Timer reset with server timestamp:", data);
       await fetchConfig();
@@ -147,7 +160,7 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
       setError("Unerwarteter Fehler beim Zurücksetzen");
       return false;
     }
-  }, [fetchConfig]);
+  }, [fetchConfig, config]);
 
   const setRecord = useCallback(async (days: number): Promise<boolean> => {
     try {
