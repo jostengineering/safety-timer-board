@@ -19,7 +19,10 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
   const [config, setConfig] = useState<AccidentConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const lastCheckedRecord = useRef<number>(0);
+  
+  // Refs for interval callback - prevents re-creating interval on state changes
+  const lastAccidentDateRef = useRef<Date | null>(null);
+  const recordDaysRef = useRef<number>(0);
 
   const fetchConfig = useCallback(async () => {
     try {
@@ -36,11 +39,14 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
       }
 
       if (data) {
-        setConfig({
+        const newConfig = {
           lastAccidentDate: new Date(data.last_accident_date),
           recordDays: data.record_days,
-        });
-        lastCheckedRecord.current = data.record_days;
+        };
+        setConfig(newConfig);
+        // Update refs for interval
+        lastAccidentDateRef.current = newConfig.lastAccidentDate;
+        recordDaysRef.current = newConfig.recordDays;
         setError(null);
       }
     } catch (err) {
@@ -56,19 +62,21 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
     fetchConfig();
   }, [fetchConfig]);
 
-  // Check and update record every 10 minutes
+  // Check and update record every 10 minutes - interval set up ONCE
   useEffect(() => {
-    if (!config) return;
-
     const checkAndUpdateRecord = async () => {
+      const lastDate = lastAccidentDateRef.current;
+      const currentRecord = recordDaysRef.current;
+      
+      if (!lastDate) return;
+
       const now = new Date();
-      const diff = now.getTime() - config.lastAccidentDate.getTime();
+      const diff = now.getTime() - lastDate.getTime();
       const currentDays = Math.floor(diff / (1000 * 60 * 60 * 24));
 
       // Only update if current days is greater than stored record
-      if (currentDays > config.recordDays && currentDays > lastCheckedRecord.current) {
-        console.log(`Updating record: ${config.recordDays} -> ${currentDays}`);
-        lastCheckedRecord.current = currentDays;
+      if (currentDays > currentRecord) {
+        console.log(`New record! Updating: ${currentRecord} -> ${currentDays}`);
 
         try {
           const { error: updateError } = await supabase
@@ -82,6 +90,8 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
           if (updateError) {
             console.error("Error updating record:", updateError);
           } else {
+            // Update ref to prevent duplicate updates from this instance
+            recordDaysRef.current = currentDays;
             console.log("Record updated successfully to:", currentDays);
           }
         } catch (err) {
@@ -90,11 +100,11 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
       }
     };
 
-    // Only check every 10 minutes, not on config change
+    // Only check every 10 minutes
     const interval = setInterval(checkAndUpdateRecord, 10 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [config?.lastAccidentDate.getTime(), config?.recordDays]);
+  }, []); // Empty deps - only set up once
 
   // Realtime subscription
   useEffect(() => {
@@ -111,11 +121,14 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
           console.log("Realtime update received:", payload);
           if (payload.new && typeof payload.new === "object" && "last_accident_date" in payload.new) {
             const newData = payload.new as { last_accident_date: string; record_days: number };
-            setConfig({
+            const newConfig = {
               lastAccidentDate: new Date(newData.last_accident_date),
               recordDays: newData.record_days,
-            });
-            lastCheckedRecord.current = newData.record_days;
+            };
+            setConfig(newConfig);
+            // Update refs for interval
+            lastAccidentDateRef.current = newConfig.lastAccidentDate;
+            recordDaysRef.current = newConfig.recordDays;
           }
         }
       )
@@ -175,7 +188,7 @@ export const useAccidentConfig = (): UseAccidentConfigResult => {
         return false;
       }
 
-      lastCheckedRecord.current = days;
+      recordDaysRef.current = days;
       setConfig(prev => prev ? { ...prev, recordDays: days } : null);
       return true;
     } catch (err) {
