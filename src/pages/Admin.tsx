@@ -21,6 +21,7 @@ const Admin = () => {
   const [password, setPassword] = useState("");
   const [newRecordDays, setNewRecordDays] = useState("");
   const [resetHistory, setResetHistory] = useState<ResetHistoryEntry[]>([]);
+  const [initialRecordLoaded, setInitialRecordLoaded] = useState(false);
   const { config, resetTimer, setRecord, resetRecord, isLoading } = useAccidentConfig();
 
   const fetchResetHistory = async () => {
@@ -52,11 +53,13 @@ const Admin = () => {
     }
   }, []);
 
+  // Only set initial value once, not on every realtime update
   useEffect(() => {
-    if (config) {
+    if (config && !initialRecordLoaded) {
       setNewRecordDays(config.recordDays.toString());
+      setInitialRecordLoaded(true);
     }
-  }, [config]);
+  }, [config, initialRecordLoaded]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
